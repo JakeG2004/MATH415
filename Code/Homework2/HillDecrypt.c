@@ -180,6 +180,7 @@ int** FindInverseMatrix(int** inMatrix, int dimension)
 }
 
 // create matrix of minors
+//THIS CODE IS BAD!!!! FIX!!!!
 void GetMatrixOfMinors(int** inMatrix, int** minor, int dimension, int row, int col)
 {
     int m = 0;
