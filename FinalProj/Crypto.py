@@ -1,5 +1,6 @@
 ValidTokens = ["A", "Bb", "B", "C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "/"]
 
+# ===== GENERAL FUNCTIONS =====
 def GetInput(inString, numTokens):
     validChars = "ABCDEFGb/ "
     tokens = []  # Initialize an empty list to store tokens
@@ -55,7 +56,7 @@ def ShiftChar(token, key):
     # Return the shifted token
     return ValidTokens[cipherIndex]
 
-
+# ===== SHIFT CIPHER FUNCTIONS =====
 def CaesarCipher(tokens):
     cipherText = []  # Initialize an empty list for the cipher text
 
@@ -78,22 +79,163 @@ def CaesarCipher(tokens):
     print("Ciphered text:", cipherText)
     return cipherText
 
+def AffineCipher(tokens):
+    alpha = None
+    beta = None
+    ciphertext = []
+
+    while alpha is None:
+        try:
+            alpha = int(input("Alpha: "))
+            if(alpha < 0 or alpha > 12):
+                print("alpha must be 0 - 12")
+                alpha = None
+        except ValueError:
+            print("Please use valid integer (0 - 12)")
+
+    while beta is None:
+        try:
+            beta = int(input("Beta: "))
+            if(beta < 0 or beta > 12):
+                print("beta must be 0 - 12")
+                beta = None
+        except ValueError:
+            print("Please use valid integer (0 - 12)")
+
+    for token in tokens:
+        tokenIndex = ValidTokens.index(token)
+        ciphertext.append(ValidTokens[(tokenIndex + beta) % 13])
+
+    print(ciphertext)
+
 def VigCipher(tokens):
     cipherText = []
 
     passPhrase = None
     passTokens = None
+
     while passPhrase is None:
             passPhrase = input("Passphrase: ")
             passTokens = GetInput(passPhrase, -1)
 
     for i in range(len(tokens)):
-        cipheredToken = ShiftChar(tokens[i], ValidTokens.index(passPhrase[i % len(passPhrase)]))
+        shiftAmount = ValidTokens.index(passTokens[i % len(passTokens)])
+        cipheredToken = ShiftChar(tokens[i], shiftAmount)
         cipherText.append(cipheredToken)
 
     print("Ciphered text:", cipherText)
     return cipherText
 
+# ===== PLAYFAIR FUNCTIONS =====
+def FixPlayfairCipherTokens(tokens):
+    fixedTokens = []
+
+    # Process tokens and handle duplicates
+    for token in tokens:
+        if token == '/':
+            token = 'A'
+        fixedTokens.append(token)
+
+    # Fix to even length by appending a filler token if needed
+    if len(fixedTokens) % 2 != 0:
+        fixedTokens.append('/')
+
+    # Create tuples of consecutive tokens
+    tokenPairs = [(fixedTokens[i], fixedTokens[i + 1]) for i in range(0, len(fixedTokens), 2)]
+
+    return tokenPairs
+
+def InitializePlayfairArray():
+    passPhrase = input("Enter key: ")
+    passTokens = GetInput(passPhrase, -1)
+
+    # Parse the expression and remove duplicates
+    newPassTokens = []
+
+    for token in passTokens:
+        # Handle character collision
+        if(token == '/'):
+            token = 'A'
+
+        # Append non-duplicates
+        if(token not in newPassTokens):
+            newPassTokens.append(token)
+
+    # Create the array and fill with 'None'
+    rows = 3
+    cols = 4
+    myArr = [[None for _ in range(cols)] for _ in range(rows)]
+
+    # Place newPassTokens into the first n positions of the array
+    row = 0
+    col = 0
+
+    for token in newPassTokens:
+        myArr[row][col] = token
+
+        col += 1
+
+        if(col == cols):
+            col = 0
+            row += 1
+
+            if(row == rows):
+                break
+
+    # Add remaining ValidTokens that are not already in newPassTokens
+    for token in ValidTokens:
+        if token not in newPassTokens:
+            myArr[row][col] = token
+            col += 1
+            if col == cols:
+                col = 0
+                row += 1
+                if row == rows:
+                    break
+
+    return myArr
+
+def FindPlayfairArrCoords(token, arr):
+    coords = []
+
+    for line in arr:
+        if(token in line):
+            coords.append(arr.index(line))
+
+    coords.append(arr[coords[0]].index(token))
+
+    return coords
+
+def PlayfairCipher(tokens):
+    cipherText = []
+
+    # Initalize the encryption array
+    encryptionArr = InitializePlayfairArray()
+
+    # Fix input
+    tokenPairs = FixPlayfairCipherTokens(tokens)
+
+    for pair in tokenPairs:
+        t1coords = FindPlayfairArrCoords(pair[0], encryptionArr)
+        t2coords = FindPlayfairArrCoords(pair[1], encryptionArr)
+
+        # Handle same row (replace with char to right)
+        if(t1coords[0] == t2coords[0]):
+            cipherText.append(encryptionArr[t1coords[0]][(t1coords[1] + 1) % 4])
+            cipherText.append(encryptionArr[t2coords[0]][(t2coords[1] + 1) % 4])
+
+        # Handle same col (replace with char to bottom)
+        elif(t1coords[1] == t2coords[1]):
+            cipherText.append(encryptionArr[(t1coords[0] + 1) % 3][t1coords[1]])
+            cipherText.append(encryptionArr[(t2coords[0] + 1) % 3][t2coords[1]])
+
+        # Handle different row and col
+        else:
+            cipherText.append(encryptionArr[t1coords[0]][t2coords[1]])
+            cipherText.append(encryptionArr[t2coords[0]][t1coords[1]])
+
+    print(cipherText)
+    return cipherText
 
 # Main Program
 tokens = None  # Initialize tokens
@@ -121,13 +263,13 @@ match cipher:
     case 2:
         VigCipher(tokens)
     case 3:
-        print("Affine")
+        AffineCipher(tokens)
     case 4:
         print("Hill")
     case 5:
         print("One-time pad")
     case 6:
-        print("Playfair")
+        PlayfairCipher(tokens)
     case 7:
         print("ADFGX")
     case _:
