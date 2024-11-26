@@ -237,6 +237,122 @@ def PlayfairCipher(tokens):
     print(cipherText)
     return cipherText
 
+# ===== ADFGX FUNCTIONS =====
+def GetLabelsFromADFGXMatrix(token, matrix):
+    coords = []
+
+    # Handle character collision
+    if(token == '/'):
+        token = 'A'
+
+    # Get coords of token
+    for line in matrix:
+        if(token in line):
+            coords.append(matrix.index(line))
+            break
+    coords.append(matrix[coords[0]].index(token))
+
+    # print(str(token) + str(coords))
+
+    # Translate coordinates to pitch pairs
+    labels = []
+
+    match (coords[0]):
+        case 0:
+            labels.append('C')
+        case 1:
+            labels.append('Eb')
+        case 2:
+            labels.append('F')
+        case _:
+            print("Invalid coords[0]: " + str(coords[0]))
+
+    match (coords[1]):
+        case 0:
+            labels.append('Gb')
+        case 1:
+            labels.append('G')
+        case 2:
+            labels.append('Bb')
+        case 3:
+            labels.append('/')
+        case _:
+            print("Invalid coords[1] " + str(coords[1]))
+
+    return labels
+
+def SortArrBasedOnFirstVal(arr):
+    retArr = []
+
+    for row in arr:
+        # If retArr is empty, add the first row
+        if not retArr:
+            retArr.append(row)
+        else:
+            curIndex = 0
+            while curIndex < len(retArr):
+                # Compare positions in ValidTokens
+                if ValidTokens.index(retArr[curIndex][0]) < ValidTokens.index(row[0]):
+                    curIndex += 1
+                else:
+                    # Insert row at the correct position
+                    retArr.insert(curIndex, row)
+                    break
+            else:
+                # Append row if it belongs at the end
+                retArr.append(row)
+
+    return retArr
+
+def ADFGXCipher(tokens):
+    cipherText = []
+
+    encryptionMatrix = [['A', 'Bb', 'B', 'C'], ['Db', 'D', 'Eb', 'E'], ['F', 'Gb', 'G', 'Ab']]
+
+    pitchPairs = []
+
+    for token in tokens:
+        pitchPairs.append(GetLabelsFromADFGXMatrix(token, encryptionMatrix))
+    
+    passPhrase = input("key: ")
+    passTokens = GetInput(passPhrase, -1)
+
+    # setup partial encryption array 1
+    pe1Arr = []
+    for token in passTokens:
+        pe1Arr.append([token])
+
+    # print(pitchPairs)
+
+    pitchIndex = 0
+    # Insert pitch pairs into the array
+    for i in range(len(pitchPairs)):
+        tok1 = pitchPairs[i][0]
+        tok2 = pitchPairs[i][1]
+
+        # Insert first token
+        pe1Arr[pitchIndex].append(tok1)
+
+        # Increment the index
+        pitchIndex = (pitchIndex + 1) % len(pe1Arr)
+
+        # Insert second token
+        pe1Arr[pitchIndex].append(tok2)
+
+        # Increment index
+        pitchIndex = (pitchIndex + 1) % len(pe1Arr)
+
+    # Sort it based on pitch value
+    encryptedArr = SortArrBasedOnFirstVal(pe1Arr)
+
+    # Insert from encryptedArr to the ciphertext. ignoring the key headers
+    for row in encryptedArr:
+        cipherText.extend(row[1:])
+
+    print(cipherText)
+    return cipherText
+
+
 # Main Program
 tokens = None  # Initialize tokens
 
@@ -271,6 +387,6 @@ match cipher:
     case 6:
         PlayfairCipher(tokens)
     case 7:
-        print("ADFGX")
+        ADFGXCipher(tokens)
     case _:
         print("Unkown token entered")
