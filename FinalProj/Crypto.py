@@ -107,6 +107,7 @@ def AffineCipher(tokens):
         ciphertext.append(ValidTokens[(tokenIndex + beta) % 13])
 
     print(ciphertext)
+    return ciphertext
 
 def VigCipher(tokens):
     cipherText = []
@@ -123,7 +124,7 @@ def VigCipher(tokens):
         cipheredToken = ShiftChar(tokens[i], shiftAmount)
         cipherText.append(cipheredToken)
 
-    print("Ciphered text:", cipherText)
+    print(cipherText)
     return cipherText
 
 # ===== PLAYFAIR FUNCTIONS =====
@@ -352,6 +353,60 @@ def ADFGXCipher(tokens):
     print(cipherText)
     return cipherText
 
+# ===== Hill Cipher =====
+def HillCipher(tokens):
+    cipherText = []
+
+    # Get the dimension
+    dimension = None
+    while(dimension is None):
+        try:
+            dimension = int(input("Dimension of array: "))
+        except ValueError:
+            dimension = None
+            print("Invalid dimension")
+
+    # Get the passphrase tokens
+    passTokens = None
+    while(passTokens is None):
+        passPhrase = input("Enter a " + str(dimension * dimension) + " note melody: ")
+        passTokens = GetInput(passPhrase, (dimension * dimension))
+
+    # Make the encryption array
+    encryptArr = [[0] * dimension for _ in range(dimension)]
+
+    # Populate encryption array
+    for i in range(dimension):
+        for j in range(dimension):
+            encryptArr[i][j] = passTokens[(i * dimension) + j]
+
+    # Split the plaintext into n vectors with size dimension
+    curIndex = 0
+    ptVectors = []
+
+    while curIndex < len(tokens):
+        vector = []
+        for i in range(dimension):
+            if curIndex < len(tokens):
+                vector.append(tokens[curIndex])
+                curIndex += 1
+            else:
+                # Pad with '/' if we run out of tokens
+                vector.append('/')
+
+        # Add the vector to the list of vectors
+        ptVectors.append(vector)
+
+    # Do matrix multiplication, store in ciphertext
+    for vec in ptVectors:
+        for i in range(dimension):
+            total = 0
+            for j in range(dimension):
+                total += ValidTokens.index(vec[j]) * ValidTokens.index(encryptArr[i][j])
+            cipherText.append(ValidTokens[total % 13])
+
+    print(cipherText)
+    return(cipherText)
 
 # Main Program
 tokens = None  # Initialize tokens
@@ -361,9 +416,8 @@ print("1) Caesar Cipher")
 print("2) Vigenere Cipher")
 print("3) Affine Cipher")
 print("4) Hill Cipher")
-print("5) One-time Pad")
-print("6) Playfair Cipher")
-print("7) ADFGX Cipher")
+print("5) Playfair Cipher")
+print("6) ADFGX Cipher")
 
 cipher = int(input("> "))
 
@@ -381,12 +435,10 @@ match cipher:
     case 3:
         AffineCipher(tokens)
     case 4:
-        print("Hill")
+        HillCipher(tokens)
     case 5:
-        print("One-time pad")
-    case 6:
         PlayfairCipher(tokens)
-    case 7:
+    case 6:
         ADFGXCipher(tokens)
     case _:
         print("Unkown token entered")
