@@ -61,15 +61,8 @@ def CaesarCipher(tokens):
     cipherText = []  # Initialize an empty list for the cipher text
 
     # Get valid key
-    key = None
-    while key is None:
-        try:
-            key = int(input("Enter a key (0-13): "))
-            if key < 0 or key > 13:
-                print("Key must be between 0 and 13.")
-                key = None
-        except ValueError:
-            print("Please enter a valid integer.")
+    keyText = input("Enter the key: ")
+    key = ValidTokens.index(GetInput(keyText, 1)[0])
 
     # Loop through each token and shift it using ShiftChar
     for token in tokens:
@@ -84,26 +77,34 @@ def AffineCipher(tokens):
     beta = None
     ciphertext = []
 
+    # Get alpha
     while alpha is None:
         try:
-            alpha = int(input("Alpha: "))
-            if(alpha < 0 or alpha > 12):
-                print("alpha must be 0 - 12")
+            alpha = input("Alpha: ")
+            alpha = GetInput(alpha, 1)
+            if(ValidTokens.index(alpha[0]) == 0):
+                print("Alpha may not be zero")
                 alpha = None
         except ValueError:
-            print("Please use valid integer (0 - 12)")
+            alpha = None
 
+    # Convert alpha to an integer
+    alpha = ValidTokens.index(alpha[0])
+
+    # Get beta
     while beta is None:
         try:
-            beta = int(input("Beta: "))
-            if(beta < 0 or beta > 12):
-                print("beta must be 0 - 12")
-                beta = None
+            beta = input("Beta: ")
+            beta = GetInput(beta, 1)
         except ValueError:
-            print("Please use valid integer (0 - 12)")
+            beta = None
 
+    # Convert beta to an integer
+    beta = ValidTokens.index(beta[0])
+
+    # c = ax + b (mod 13)
     for token in tokens:
-        tokenIndex = ValidTokens.index(token)
+        tokenIndex = (ValidTokens.index(token) * alpha)
         ciphertext.append(ValidTokens[(tokenIndex + beta) % 13])
 
     print(ciphertext)
