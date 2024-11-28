@@ -1,3 +1,5 @@
+from midiutil.MidiFile import MIDIFile
+
 ValidTokens = ["A", "Bb", "B", "C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "/"]
 
 # ===== GENERAL FUNCTIONS =====
@@ -410,8 +412,9 @@ def HillCipher(tokens):
     return(cipherText)
 
 # Main Program
-tokens = None  # Initialize tokens
+tokens = None
 
+# PRompt user with menu
 print("Welcome to the musical encryption program. Enter the number for the type of encryption you would like to do!")
 print("1) Caesar Cipher")
 print("2) Vigenere Cipher")
@@ -420,6 +423,7 @@ print("4) Hill Cipher")
 print("5) Playfair Cipher")
 print("6) ADFGX Cipher")
 
+# Get input
 cipher = int(input("> "))
 
 # Continue polling until valid input gotten
@@ -428,18 +432,54 @@ while tokens is None:
 
     tokens = GetInput(inString, 8)
 
+ciphertext = None
+
+# Process cipher
 match cipher:
     case 1:
-        CaesarCipher(tokens)
+        ciphertext = CaesarCipher(tokens)
     case 2:
-        VigCipher(tokens)
+        ciphertext = VigCipher(tokens)
     case 3:
-        AffineCipher(tokens)
+        ciphertext = AffineCipher(tokens)
     case 4:
-        HillCipher(tokens)
+        ciphertext = HillCipher(tokens)
     case 5:
-        PlayfairCipher(tokens)
+        ciphertext = PlayfairCipher(tokens)
     case 6:
-        ADFGXCipher(tokens)
+        ciphertext = ADFGXCipher(tokens)
     case _:
         print("Unkown token entered")
+
+# Make MIDI file with 1 track
+mf = MIDIFile(1)
+
+# Select track 0 at time 0
+track = 0
+time = 0
+
+# Name the track and add tempo
+mf.addTrackName(track, time, "Track")
+mf.addTempo(track, time, 120)
+
+# Add notes
+channel = 0
+volume = 100
+
+# Handle each pitch in the ciphertext
+curTime = 0
+for token in ciphertext:
+    # Handle rest
+    if(token == '/'):
+        curTime += 1
+        continue
+
+    # Write the pitch to the midi file
+    else:
+        newPitch = 57 + (ValidTokens.index(token))
+        mf.addNote(track, channel, pitch = newPitch, time = curTime, duration = 1, volume = volume)
+        curTime += 1
+
+# Save to a file
+with open("output_with_rest.mid", "wb") as output_file:
+    mf.writeFile(output_file)
