@@ -5,7 +5,7 @@ from cipher_functions import *
 app = Flask(__name__)
 
 # MIDI File Creation
-def create_midi_file(ciphertext):
+def create_midi_file(ciphertext, cipherType):
     ValidTokens = ["A", "Bb", "B", "C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "/"]
     mf = MIDIFile(1)
     track = 0
@@ -24,7 +24,7 @@ def create_midi_file(ciphertext):
             mf.addNote(track, channel, pitch=newPitch, time=curTime, duration=1, volume=volume)
             curTime += 1
 
-    filepath = "output_with_rest.mid"
+    filepath = cipherType + "_out.mid"
     with open(filepath, "wb") as output_file:
         mf.writeFile(output_file)
     return filepath
@@ -52,7 +52,7 @@ def caesar():
             return "Invalid key note! Please use a valid note."
 
         # Generate MIDI
-        midi_path = create_midi_file(ciphertext)
+        midi_path = create_midi_file(ciphertext, "caesar")
         return send_file(midi_path, as_attachment=True)
 
     return render_template("caesar.html")
@@ -66,7 +66,7 @@ def vigenere():
         tokens = GetInput(melody, 8)
         key = GetInput(key_melody, -1)
 
-        if not tokens:
+        if not tokens or not key:
             return "Invalid input! Please try again."
 
         try:
@@ -76,7 +76,7 @@ def vigenere():
             return "Invalid key note! Please use a valid melodu."
 
         # Generate MIDI
-        midi_path = create_midi_file(ciphertext)
+        midi_path = create_midi_file(ciphertext, "vigenere")
         return send_file(midi_path, as_attachment=True)
 
     return render_template("vig.html")
@@ -102,7 +102,7 @@ def affine():
             return "Invalid key note! Please use a valid melody."
 
         # Generate MIDI
-        midi_path = create_midi_file(ciphertext)
+        midi_path = create_midi_file(ciphertext, "affine")
         return send_file(midi_path, as_attachment=True)
 
     return render_template("affine.html")
@@ -125,7 +125,7 @@ def playfair():
             return "Invalid key note! Please use a valid melody."
 
         # Generate MIDI
-        midi_path = create_midi_file(ciphertext)
+        midi_path = create_midi_file(ciphertext, "playfair")
         return send_file(midi_path, as_attachment=True)
 
     return render_template("playfair.html")
@@ -148,7 +148,7 @@ def adfgx():
             return "Invalid key note! Please use a valid melody."
 
         # Generate MIDI
-        midi_path = create_midi_file(ciphertext)
+        midi_path = create_midi_file(ciphertext, "ADFGX")
         return send_file(midi_path, as_attachment=True)
 
     return render_template("adfgx.html")
@@ -176,7 +176,11 @@ def hill():
             return "Invalid key note! Please use a valid melody."
 
         # Generate MIDI
-        midi_path = create_midi_file(ciphertext)
+        midi_path = create_midi_file(ciphertext, "hill")
         return send_file(midi_path, as_attachment=True)
 
     return render_template("hill.html")
+
+@app.route('/paper', methods=["GET", "POST"])
+def paper():
+    return send_file("paper.pdf", as_attachment=True)

@@ -1,0 +1,439 @@
+\documentclass[14pt]{article}
+\usepackage{graphicx} % Required for inserting images
+\usepackage{amsmath}
+\usepackage[
+backend=biber,
+style=alphabetic,
+sorting=ynt
+]{biblatex}
+
+\addbibresource{sample.bib} %Imports bibliography file
+
+\title{Math 415 Final Project: Application of Classical Cryptosystems to Music}
+\author{Jake Gendreau}
+\date{December 2, 2024}
+
+\begin{document}
+	\maketitle
+
+	\tableofcontents
+
+	\section{Abstract}
+    This paper will explore classical cryptosystems and their adaptations to take in and spit out musical melodies. This topic comes from my interests in both music and mathematics. As the class has progressed, I have been making connections between the concepts in class and the music that I play. Through this paper, the same melodies will be applied to each of the cryptosystems in order to determine which makes the best sounding result, as measured by my ear.
+
+	\section{Introduction}
+    In typical applications of cryptosystems, the set of valid characters is the letters of the english alphabet. In order to adapt these systems for musical systems, I defined the set of valid characters to be $C = \{A, Bb, B, C, Db, D, Eb, E, F, Gb, G, Ab, /\}$. Each symbol represents a note of 12 tone equal temperament, and '/' represents rest. This set contains 13 characters. For simplicity's sake, I will restrict the plaintext melodies to be a single measure of eight eighth notes.
+
+    In my discoveries, I discuss the observed relationships between the melodies and keys fed into the ciphers, and the resulting melody. I use musical terminology, which I will explain here:
+    \begin{itemize}
+        \item Key (music) - The set of pitches that will be used in a tune. Each key has a corresponding major and minor version.
+        \item Scale - An ascending line that plays every note of a musical key.
+        \item Diatonic - Uses the tones of a scale.
+        \item Non-diatonic - Does not use the tones of a scale.
+        \item Chord - Pitches in a key that are played to create harmony.
+        \item Chord extensions - Additional notes in a chord that give it a different texture
+    \end{itemize}
+
+	\section{Modifying Cryptosystems to Work With Music}
+        \subsection{Caesar Cipher}
+            \subsubsection{Standard Usage}
+            The standard usage of the Caesar Cipher is as follows:
+            \begin{enumerate}
+                \item Choose a key, k, from 0 - 26.
+                \item Shift each token in the plaintext by the key, then take it modulus 26.
+            \end{enumerate}
+            \cite{Trappe}
+            
+            \subsubsection{Modification to Work With Music}
+            For the Caesar Cipher, it is trivial to make it work with music. The following must be changed:
+            \begin{itemize}
+                \item The key, k, must be 0 - 13 instead of 0 - 26.
+                \item The modulus of each shift must be 13 instead of 26.
+            \end{itemize}
+
+            \subsubsection{Example}
+            \begin{enumerate}
+                \item Choose the plaintext \{D, E, F, G, E, /, C, D\} and they key $k = C$.
+                \item Shift each key by C modulus 13.
+                \item The resulting ciphertext is \{F, G, Ab, A, G, B, Eb, F\}
+            \end{enumerate}
+    
+        \subsection{Vigenere Cipher}
+            \subsubsection{Standard Usage}
+            The standard usage of the Caesar Cipher is as follows:
+            \begin{enumerate}
+                \item Choose a passphrase.
+                \item Repeat the passphrase enough times so that it is equal to the length of the plaintext, truncating if needed.
+                \item Combine the plaintext with the passphrase token-wise, modulus 26.
+            \end{enumerate}
+            \cite{Trappe}
+
+            \subsubsection{Modification to Work With Music}
+            To make the Viginere Cipher work with music, it remains trivial. The following must be changed:
+            \begin{itemize}
+                \item The key must be another melody, not a single note or character.
+                \item The modulus of each token-wise combination must be taken mod 13, not mod 26.
+            \end{itemize}
+
+            \subsubsection{Example}
+            \begin{enumerate}
+                \item Choose plaintext = \{D, E, F, G, E, /, C, D\}.
+                \item Choose passphrase = \{A, B, C\}.
+                \item Expand the passphrase = \{A, B, C, A, B, C, A, B\}.
+                \item For each token in the plaintext, combine it with the corresponding token in the passphrase, mod 13.
+                \item The resulting ciphertext is \{D, Gb, Ab, G, Gb, B, C, E\}.
+                
+            \end{enumerate}
+    
+        \subsection{Affine Cipher}
+            \subsubsection{Standard Usage}
+            The standard usage of the Affine Cipher is as follows:
+            \begin{enumerate}
+                \item Choose $(\alpha, \beta)$ such that $gcd(\alpha, 26) = 1$, and $\beta \in \mathbf{Z}$
+                \item For each token in the plaintext, the corresponding ciphertext token is equal to $\alpha * x + \beta (mod 26)$
+            \end{enumerate}
+            \cite{Trappe}
+            
+            \subsubsection{Modification to Work With Music}
+            \begin{itemize}
+                \item The property must be retained that $gcd(\beta, n) = 1$, where n is the modulus. Since the new modulus is 13, this will always be the case.
+                \item When doing the operation $\alpha * x + \beta (mod n)$, n must be equal  to 13, not 26.
+            \end{itemize}
+
+            \subsubsection{Example}
+            \begin{enumerate}
+                \item Choose plaintext = \{D, E, F, G, E, /, C, D\}.
+                \item Choose key $(\alpha, \beta) = (Db, G)$.
+                \item For each token in the plaintext, perform the operation $c = \alpha * x + \beta (mod 13)$, where c is the corresponding ciphertext token.
+                \item The resulting ciphertext is \{Db, /, C, Ab, /, Eb, Gb, Db\}.
+            \end{enumerate}
+
+	\subsection{Hill Cipher}
+        \subsubsection{Standard Usage}
+            \begin{enumerate}
+                \item Choose an $n$ that will define the dimension of the encryption matrix.
+                \item Create an $n * n$ invertible matrix, $M$, using the values 0 - 25.
+                \item Split the plaintext up into $m$ segments of size $n$, appending 'x' if needed.
+                \item For each of the $m$ plaintext segments, multiply the vector by the matrix. Append the encrypted segment to the ciphertext.
+            \end{enumerate}
+            \cite{Trappe}
+
+    	\subsubsection{Modification to Work With Music}
+            \begin{itemize}
+                \item $M$ must consist of the values 0 - 12, instead of 0 - 25.
+                \item The property that $M$ must be invertible mod n must be retained. Since $n = 13$ is prime, it is sufficient that $det(M) \neq 0$.
+                \item Instead of appending 'x', append '/' if needed.
+            \end{itemize}
+    
+    	\subsubsection{Example}
+            \begin{enumerate}
+                \item Choose plaintext = \{D, E, F, G, E, /, C, D\}.
+                \item Choose encryption matrix
+            	\[
+                M =
+        		\begin{bmatrix}
+        			Ab & A & B \\
+        			C  & D & E \\
+        			F  & G & A
+        		\end{bmatrix}
+            	\]
+                Since $det(M) \equiv 3 \pmod{13}$, this matrix is invertible, and can be used.
+                \item Split the plaintext into vectors of size 3. \{D, E, F\}, \{G, E, /\}, \{C, D, /\}. In this case, a '/' had to be appended.
+                \item Multiplying each of these vectors by $M$ results in \{Eb, B, Eb\}, \{Db, Eb, E\}, \{D, Bb, Gb\}.
+                \item Combining these vectors gives the ciphertext \{Eb, B, Eb, Db, Eb, E, D, Bb, Gb\}.
+            \end{enumerate}
+
+	\subsection{Playfair Cipher}
+    	\subsubsection{History}
+        The Playfair Cipher was created by Charles Wheatstone, but carries the name of his friend - Lyon Playfair. Playfair was "A scientist and public figure of Victorian England..." \cite{Kahn}. As such, he had some pull within the English government. In January of 1854, Playfair demonstrated "Wheatstone's newly discovered symmetrical cipher" at a dinner hosted by Lord Granville, which included guests such as the Home Secretary and the future Prime Minister \cite{Kahn}.
+        
+        Wheatstone and Playfair explained the cipher to some higher-ups in the government, where it was eventually accepted. It may have been used in the Crimean War, but there is no solid evidence of it. It was, however, defnitely used during the Boer war \cite{Kahn}.
+    
+    	\subsubsection{Standard Usage}
+    	\begin{enumerate}
+    		\item The first step is to set up the encryption matrix:
+                \begin{enumerate}
+                    \item Choose a passphrase.
+    
+                    \item Remove duplicate characters from the passphrase.
+    
+                    \item Fill in the first n positions of a 5x5 matrix using the passphrase, where n is the length of the passphrase without duplicate characters.
+    
+                    \item Fill in the rest of the 5x5 matrix with the characters of the alphabet, treating I and J as the same character.
+                \end{enumerate}
+    
+    		\item The second step is to set up the plaintext such that it is ready for encryption:
+    			\begin{enumerate}
+    				\item Between any pair of double letters, insert an 'x'.
+    
+    				\item If needed, append an 'x' onto the end so that the length of the plaintext is even.
+    
+    				\item Divide the plaintext into groups of two letters each.
+    			\end{enumerate}
+    
+    		\item The last step is to encrypt using the following scheme:
+    			\begin{enumerate}
+    				\item If the two letters in the plaintext group are not in the same row or column of the encryption matrix, replace each letter by the letter that is in its row and the column of the other letter.
+    
+    				\item If the last two letters are in the same row, replace each letter with the letter immediately to its right, with the matrix wrapping around from the last column to the first.
+    
+    				\item If the two letters are in the same column, replace each letter with the letter immediately below it, with the matrix wrapping around from the last tow to the first.
+    			\end{enumerate}
+    	\end{enumerate}
+        \cite{Trappe}
+    
+    	\subsubsection{Modification to Work With Music}
+    	\begin{enumerate}
+    		\item Set up encryption matrix:
+    			\begin{enumerate}
+    				\item Choose a passphrase.
+    
+    				\item Remove duplicate pitches from the passphrase.
+    
+    				\item Fill in the first n positions of a 3x4 matrix using the passphrase, where n is the length of the passphrase without duplicate pitches.
+    
+    				\item Fill in the rest of the 3x5 matrix with the pitches in an octave, treating '/' and 'A' as the same pitch.
+    			\end{enumerate}
+    
+    		\item Set up the plaintext for use:
+    			\begin{enumerate}
+    				\item Between any pair of double pitches, insert a '/'.
+    
+    				\item If needed, append a '/' onto the end so that the length of the plaintext is even.
+    
+    				\item Divide the plaintext into groups of two pitches each.
+    			\end{enumerate}
+    
+    		\item Encryption: The process of encryption remains the same
+    
+    			\subsubsection{Example}
+    			The plaintext \{D, E, F, G, E, /, C, D\} would get encrypted to \{E, Ab, Gb,
+    			Ab, Bb, D, D, A\}
+    	\end{enumerate}
+
+	\subsection{ADFGX Cipher}
+    	\subsubsection{History}
+    	The ADFGX Cipher was the result of many candidate ciphers being put into competition at a German conference. It was used during World War I by the German army, and was the most impossible cipher in existence at the time. Georges Painvin was the one who would eventually end up cracking it. For three weeks, Painvin struggled at his desk, trying every possible angle of attack, until he finally figure it out \cite{Kahn}. 
+        
+        As time progressed, Painvin got faster and faster at decrypting German messages. Eventually, it would take him less than 24 hours to decrypt incoming messages. Because of Painvin's efforts, the French were able to prepare for various German attacks, which saved lives and helped to win the war \cite{Kahn}.
+    	\subsubsection{Standard Usage}
+    	\begin{enumerate}
+    		\item The first step of using the ADFGX Cipher is to set up the encryption matrix.
+    			\begin{enumerate}
+    				\item Insert every character of the alphabet into a 5x5 matrix in random order, treating 'I' and 'J' as a single character.
+    
+    				\item Label the columns and rows of the matrix with A, D, F, G, and X. An example would be
+    					\[
+    						\begin{array}{c|ccccc}
+    							  & A & D & F & G & X \\
+    							\hline
+    							A & A & B & C & D & E \\
+    							D & F & G & H & I & K \\
+    							F & L & M & N & O & P \\
+    							G & Q & R & S & T & U \\
+    							X & V & W & X & Y & Z \\
+    						\end{array}
+    					\]
+    					It is important to note that the values of the matrix do not have to be in the order of the alphabet, they could be in any order.
+    			\end{enumerate}
+    
+    		\item The next step is to encrypt the plaintext.
+    			\begin{enumerate}
+    				\item Take each letter of the plaintext, and replace it with the row and column values of its position in the matrix. For example, H would be encrypted to DF.
+    
+    				\item Decide a keyword that has all unique letters. Organize the letters in the partially encrypted plaintext in a matrix under the keyword. For example, using the matrix above, a plaintext of "HELLO", and a keywordof "MATH", the new matrix would be:
+    					\[
+    						\begin{array}{ccccc}
+    							M & A & T & H \\
+    							\hline
+    							D & F & A & X \\
+    							F & A & F & A \\
+    							F & G &   &   \\
+    						\end{array}
+    					\]
+    
+    				\item Now, reorder the columns such that the column labels are in alphabetic order:
+    					\[
+    						\begin{array}{ccccc}
+    							A & H & M & T \\
+    							\hline
+    							F & X & D & A \\
+    							A & A & F & F \\
+    							G &   & F &   \\
+    						\end{array}
+    					\]
+    
+    				\item Lastly, the ciphertext is obtained by reading down the columns. In this example, it would be FAGXADFFAF.
+    			\end{enumerate}
+    	\end{enumerate}
+        \cite{Trappe}
+    
+    	\subsubsection{Modification to Work With Music}
+    	By changing the labels on the outside of the matrix, I am able to decide which notes end up in the ciphertext. Given a 4x3 matrix, I have 7 possible pitches. Taking 1 away for the rest leaves me with just enough to make a blues scale.
+    	\begin{enumerate}
+    		\item The creation of the matrix:
+    			\begin{enumerate}
+    				\item Insert the pitches from an octave of 12 tone equal temperament into a 4x3 matrix, treating 'A' and '/' as the same pitch.
+    
+    				\item Label the rows with 'C', 'Eb', and 'F'.
+    
+    				\item Label the columns with 'Gb', 'G', 'Bb', and '/'.
+    			\end{enumerate}
+    			The result should look similar to:
+    			\[
+    				\begin{array}{c|cccc}
+    					   & Gb & G  & Bb & /  \\
+    					\hline
+    					C  & A  & Bb & B  & C  \\
+    					Eb & Db & D  & Eb & E  \\
+    					F  & F  & Gb & G  & Ab \\
+    				\end{array}
+    			\]
+    			The encryption matrix is now complete.
+    
+    		\item Encryption:
+    			\begin{itemize}
+    				\item The passkey should be a melody, not a phrase.
+    
+    				\item The columns won't be sorted alphabetically. Instead, they will be sorted by scale degree ('A' is first, '/' is last).
+    			\end{itemize}
+    	\end{enumerate}
+    
+    	\subsubsection{Example}
+    	The plaintext \{D, E, F, G, E, /, C, D\}, encrypted with the key \{A, B, C, D\} would result in the ciphertext \{Eb, F, Eb, C, G, Gb, /, /, Eb, F, C, Eb, /,
+    	Bb, Gb, G\}
+
+	\section{Discoveries}
+        I used three different melodies to test my ciphers. The three are:
+        \begin{enumerate}
+            \item An A minor scale - \{A, B, C, D, E, F, G, /\}.
+            \item "The Lick", a famous jazz lick - \{D, E, F, G, E, / , C, D\}.
+            \item The note C repeated 8 times - \{C, C, C, C, C, C, C, C\}.
+        \end{enumerate}
+
+        I tested all three melodies with each of the three cryptosystems. Unsurprisingly, most of the results were bad. There were, however, some exceptions.
+
+        \subsection{Caesar Cipher}
+        The Caesar Cipher sounded good with most melodies since the same note relationships would be held, but they would be shifted up by a consistent amount. This means that whatever I fed it, would more or less, persist after the encryption.
+
+        When I was making this Cipher, I had the vision of musical transposition in my head. This musical transposition, however, is not quite the same as a mathematical transposition. In musical transposition, rests are maintained, and only pitches are moved. However, with my implementation, the rests are treated as any other note, so they will be transposed as well.
+
+        \subsection{Vigenere Cipher}
+        The Vigenere Cipher could also sound good, but it depended on what I used for the key. I found that using the notes in a chord as the key tended to make the Vigenere Cipher sound good.
+
+        Specifically, I found that using a key of \{A, C, E\} or \{C, E, G\} - the A minor triad and C major triad, which is its corresponding major musical key - sounded good. It didn't really matter how many chord extensions I used, as long as the key was part of the chord signature of A minor, it would result in something good.
+
+        \subsection{Affine Cipher}
+        The Affine Cipher could also sound good when given the right key. If I were to use a key $(\alpha, \beta)$ such that $\alpha$ and $\beta$ were the third and the seventh of the chord, it sounded better.
+
+        For example, with the melody that I have used frequently in this paper - \{D, E, F, G, E, /, C, D\} - the musical key is D minor. The third and the seventh of D minor would be F and C, respectively. Going through and applying the algorithm to each pitch with the key $(F, C)$ yields \{Db, E, B, D, E, F, Bb, Db\}, which, interestingly, fits almost entirely into the key of F - the relative major to D minor. 
+        
+        Interestingly, this property holds true for all sorts of melodies and keys. Testing it with the A minor scale, along with the corresponding key yields \{G, C, Eb, /, D, G, Bb, E\}, which fits almost entirely into the key of C major, which is A minor's relative major.
+
+        \subsection{Hill Cipher}
+        The only scenario where I was able to get the  Hill Cipher to sound good was when I encrypted with $3 * 3$ matrix such as:
+        \[
+        \begin{bmatrix}
+            A & B & C \\
+            D & E & F \\
+            G & A & /
+        \end{bmatrix}
+        \]
+
+        I believe this to be the case because all of the non-diatonic parts of the matrix - like \{A, B, C\} - of the encryption matrix lie in the rows, whereas the nice chordal parts lie in the colums - like \{A, D, G\}. Looking at how multiplication of vectors and matrices is done, the values of each row get multiplied by the vector values of the vector, then added together, whereas the columns are each individual. This leads to the non-diatonic parts combining, and potentially, canceling out.
+
+        \subsection{Playfair Cipher}
+        The Playfair cipher, similar to the Vigenere Cipher, tended to work nicely if the encryption key spelled out the chord of the musical key. For example, encrypting the A minor scale with the A minor chord resulted in a surprisingly beautiful melody.
+
+        Encryption with other chords, however, tended to make the resulting melody more non-diatonic the further away from the musical key center the encryption key is. For example, the A minor scale encrypted with the Bb minor triad tended to still sound good, whereas encryption with the E minor triad sounded worse.
+
+        \subsection{ADFGX Cipher}
+        The ADFGX Cipher was the best sounding algorithm. Because of how I modified the algorithm to work with music, I was able to choose the seven possible notes that the algorithm could output. I chose to make it the A minor blues scale. Since the output of the algorithm was limited to \{A, C, D, Eb, F, G, /\}, it tended to sound decent, no matter what I put into it.
+
+        That being said, as with many of the other algorithms, it tended to sound better if the encryption key that was fed to the algorithm was also a part of the musical key. The major triad sounded good, however, I found the minor triad with the major seventh extension to sound really good. For example, encrypting the A minor scale with the key \{A, C, E, G\} produced a very interesting melody, with a neat chromatic ascension at the beginning.
+        
+
+	\section{Computer Implementation}
+    For the most part, the computer implementations are identical to the algorithms presented in the textbook. When the encryption function is called, the plaintext has already been gotten, validated, and tokenized.
+    	\subsection{Caesar Cipher}
+        \begin{enumerate}
+            \item Get the key in the form of a note (e.g. Ab, C, /).
+            \item For each token in the plaintext, shift it by the key and add the shifted token to the ciphertext.
+            \item Print and return the ciphertext.
+        \end{enumerate}
+        
+    	\subsection{Vigenere Cipher}
+        \begin{enumerate}
+            \item Get, validate, and tokenize the key in the form of a passphrase melody (e.g. \{A, B, C\}.
+            \item For each token in the plaintext, do the following, shift it according to the corresponding position in the passphrase, cycling through as needed.
+            \item Append the new ciphertext token to the ciphertext list.
+            \item Print and return the ciphertext.
+        \end{enumerate}
+        
+    	\subsection{Affine Cipher}
+        \begin{enumerate}
+            \item Get, validate, and tokenize alpha.
+            \item Convert alpha to an integer representation of its token.
+            \item Get, validate, and tokenize beta.
+            \item Convert beta to an integer representation of its token.
+            \item For each token in the plaintext, multiply it by alpha, then add beta (mod 13).
+            \item Append the new token to the ciphertext.
+            \item Print and return the ciphertext.
+        \end{enumerate}
+        
+    	\subsection{Hill Cipher}
+        \begin{enumerate}
+            \item Get the dimension of the encryption matrix from the user. Store the result as $n$.
+            \item Get the passphrase in the form of an $n * n$ token melody.
+            \item Create an empty $n * n$ array.
+            \item Insert each token from the passphrase into the matrix, upper left to bottom right.
+            \item Create 2D array with $n$ empty arrays.
+            \item Split the plaintext into $m$ vectors of size $n$. If needed, append '/' to get the last vector to size $n$.
+            \item Multiply each vector by the encryption matrix, and append each token of the vectors after multiplication to the ciphertext.
+            \item Print and return the ciphertext.
+        \end{enumerate}
+        
+    	\subsection{Playfair Cipher}
+        \begin{enumerate}
+            \item Get, validate, and tokenize the key as a melody.
+            \item Remove duplicate entries from the melody.
+            \item Insert the tokens from the key into the first $n$ positions of the matrix, upper left to bottom right.
+            \item Fill the remaining positions of the matrix with the valid tokens not in the key.
+            \item Split the plaintext into pairs, inserting '/' as needed.
+            \item For each pair:
+                \begin{enumerate}
+                    \item Get the row and column of each token in the pair.
+                    \item If the two have the same row, append the token to the right to the ciphertext for both values.
+                    \item If the two have the same column, append the token to the bottom to the ciphertext for both values.
+                    \item If they have different rows and columns, append the token on its row and the column of the other token to the ciphertext.
+                \end{enumerate}
+            \item Print and return the ciphertext.
+        \end{enumerate}
+        
+    	\subsection{ADFGX Cipher}
+        \begin{enumerate}
+            \item Set up the encryption matrix
+            \[
+            M = 
+                \begin{array}{c|cccc}
+                       & Gb & G  & Bb & /  \\
+                    \hline
+                    C  & A  & Bb & B  & C  \\
+                    Eb & Db & D  & Eb & E  \\
+                    F  & F  & Gb & G  & Ab \\
+                \end{array}
+            \]
+            \item For each token in the plaintext, get its rown and column, append this pair to an array of tuples called pitchPairs.
+            \item Set up a 2D array that is the length of passTokens, where the first value of each array is the corresponding token in passTokens.
+            \item Insert each token of the pairs in pitchPairs into the 2D array.
+            \item Sort the arrays in the 2D array by scale degree (e.g. A is 0, '/' is 12).
+            \item For each array, ignore the first value (this is used for sorting), and insert the rest of the values into the ciphertext.
+            \item Print and return the ciphertext.
+        \end{enumerate}
+        
+\printbibliography[
+heading=bibintoc,
+title={Bibliography}
+] %Prints the entire bibliography with the title "Whole bibliography"
+
+\end{document}
