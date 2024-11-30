@@ -59,47 +59,26 @@ def ShiftChar(token, key):
     return ValidTokens[cipherIndex]
 
 # ===== SHIFT CIPHER FUNCTIONS =====
-def CaesarCipher(tokens):
+def CaesarCipher(tokens, inKey):
+    print("Cipher")
     cipherText = []  # Initialize an empty list for the cipher text
 
     # Get valid key
-    keyText = input("Enter the key: ")
-    key = ValidTokens.index(GetInput(keyText, 1)[0])
+    key = ValidTokens.index(inKey[0])
 
     # Loop through each token and shift it using ShiftChar
     for token in tokens:
         cipheredToken = ShiftChar(token, key)
         cipherText.append(cipheredToken)
 
-    print("Ciphered text:", cipherText)
     return cipherText
 
-def AffineCipher(tokens):
-    alpha = None
-    beta = None
+def AffineCipher(tokens, alpha, beta):
+    print("Affine")
     ciphertext = []
-
-    # Get alpha
-    while alpha is None:
-        try:
-            alpha = input("Alpha: ")
-            alpha = GetInput(alpha, 1)
-            if(ValidTokens.index(alpha[0]) == 0):
-                print("Alpha may not be zero")
-                alpha = None
-        except ValueError:
-            alpha = None
 
     # Convert alpha to an integer
     alpha = ValidTokens.index(alpha[0])
-
-    # Get beta
-    while beta is None:
-        try:
-            beta = input("Beta: ")
-            beta = GetInput(beta, 1)
-        except ValueError:
-            beta = None
 
     # Convert beta to an integer
     beta = ValidTokens.index(beta[0])
@@ -109,25 +88,17 @@ def AffineCipher(tokens):
         tokenIndex = (ValidTokens.index(token) * alpha)
         ciphertext.append(ValidTokens[(tokenIndex + beta) % 13])
 
-    print(ciphertext)
     return ciphertext
 
-def VigCipher(tokens):
+def VigCipher(tokens, passTokens):
+    print("Vig")
     cipherText = []
-
-    passPhrase = None
-    passTokens = None
-
-    while passPhrase is None:
-            passPhrase = input("Passphrase: ")
-            passTokens = GetInput(passPhrase, -1)
 
     for i in range(len(tokens)):
         shiftAmount = ValidTokens.index(passTokens[i % len(passTokens)])
         cipheredToken = ShiftChar(tokens[i], shiftAmount)
         cipherText.append(cipheredToken)
 
-    print(cipherText)
     return cipherText
 
 # ===== PLAYFAIR FUNCTIONS =====
@@ -149,8 +120,7 @@ def FixPlayfairCipherTokens(tokens):
 
     return tokenPairs
 
-def InitializePlayfairArray():
-    passPhrase = input("Enter key: ")
+def InitializePlayfairArray(passPhrase):
     passTokens = GetInput(passPhrase, -1)
 
     # Parse the expression and remove duplicates
@@ -210,11 +180,12 @@ def FindPlayfairArrCoords(token, arr):
 
     return coords
 
-def PlayfairCipher(tokens):
+def PlayfairCipher(tokens, passPhrase):
+    print("Playfair")
     cipherText = []
 
     # Initalize the encryption array
-    encryptionArr = InitializePlayfairArray()
+    encryptionArr = InitializePlayfairArray(passPhrase)
 
     # Fix input
     tokenPairs = FixPlayfairCipherTokens(tokens)
@@ -238,7 +209,6 @@ def PlayfairCipher(tokens):
             cipherText.append(encryptionArr[t1coords[0]][t2coords[1]])
             cipherText.append(encryptionArr[t2coords[0]][t1coords[1]])
 
-    print(cipherText)
     return cipherText
 
 # ===== ADFGX FUNCTIONS =====
@@ -308,7 +278,8 @@ def SortArrBasedOnFirstVal(arr):
 
     return retArr
 
-def ADFGXCipher(tokens):
+def ADFGXCipher(tokens, passPhrase):
+    print("ADFGX")
     cipherText = []
 
     encryptionMatrix = [['A', 'Bb', 'B', 'C'], ['Db', 'D', 'Eb', 'E'], ['F', 'Gb', 'G', 'Ab']]
@@ -318,7 +289,6 @@ def ADFGXCipher(tokens):
     for token in tokens:
         pitchPairs.append(GetLabelsFromADFGXMatrix(token, encryptionMatrix))
     
-    passPhrase = input("key: ")
     passTokens = GetInput(passPhrase, -1)
 
     # setup partial encryption array 1
@@ -351,27 +321,12 @@ def ADFGXCipher(tokens):
     for row in encryptedArr:
         cipherText.extend(row[1:])
 
-    print(cipherText)
     return cipherText
 
 # ===== Hill Cipher =====
-def HillCipher(tokens):
+def HillCipher(tokens, dimension, passTokens):
+    print("Hill")
     cipherText = []
-
-    # Get the dimension
-    dimension = None
-    while(dimension is None):
-        try:
-            dimension = int(input("Dimension of array: "))
-        except ValueError:
-            dimension = None
-            print("Invalid dimension")
-
-    # Get the passphrase tokens
-    passTokens = None
-    while(passTokens is None):
-        passPhrase = input("Enter a " + str(dimension * dimension) + " note melody: ")
-        passTokens = GetInput(passPhrase, (dimension * dimension))
 
     # Make the encryption array
     encryptArr = [[0] * dimension for _ in range(dimension)]
@@ -406,78 +361,4 @@ def HillCipher(tokens):
                 total += ValidTokens.index(vec[j]) * ValidTokens.index(encryptArr[i][j])
             cipherText.append(ValidTokens[total % 13])
 
-    print(cipherText)
     return(cipherText)
-
-# Main Program
-tokens = None
-
-# PRompt user with menu
-print("Welcome to the musical encryption program. Enter the number for the type of encryption you would like to do!")
-print("1) Caesar Cipher")
-print("2) Vigenere Cipher")
-print("3) Affine Cipher")
-print("4) Hill Cipher")
-print("5) Playfair Cipher")
-print("6) ADFGX Cipher")
-
-# Get input
-cipher = int(input("> "))
-
-# Continue polling until valid input gotten
-while tokens is None:
-    inString = input("Enter melody: ")
-
-    tokens = GetInput(inString, 8)
-
-ciphertext = None
-
-# Process cipher
-match cipher:
-    case 1:
-        ciphertext = CaesarCipher(tokens)
-    case 2:
-        ciphertext = VigCipher(tokens)
-    case 3:
-        ciphertext = AffineCipher(tokens)
-    case 4:
-        ciphertext = HillCipher(tokens)
-    case 5:
-        ciphertext = PlayfairCipher(tokens)
-    case 6:
-        ciphertext = ADFGXCipher(tokens)
-    case _:
-        print("Unkown token entered")
-
-# Make MIDI file with 1 track
-mf = MIDIFile(1)
-
-# Select track 0 at time 0
-track = 0
-time = 0
-
-# Name the track and add tempo
-mf.addTrackName(track, time, "Track")
-mf.addTempo(track, time, 120)
-
-# Add notes
-channel = 0
-volume = 100
-
-# Handle each pitch in the ciphertext
-curTime = 0
-for token in ciphertext:
-    # Handle rest
-    if(token == '/'):
-        curTime += 1
-        continue
-
-    # Write the pitch to the midi file
-    else:
-        newPitch = 57 + (ValidTokens.index(token))
-        mf.addNote(track, channel, pitch = newPitch, time = curTime, duration = 1, volume = volume)
-        curTime += 1
-
-# Save to a file
-with open("output_with_rest.mid", "wb") as output_file:
-    mf.writeFile(output_file)

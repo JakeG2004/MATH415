@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}Hill Cipher - Musical Cipher App{% endblock %}
+
+{% block content %}
+    <div class="container py-5">
+        <h2 class="text-center mb-4">Hill Cipher</h2>
+        
+        <form method="POST">
+            <!-- Melody input -->
+            <div class="mb-3">
+                <label for="melody" class="form-label">Melody for the Hill Cipher:</label>
+                <input type="text" name="melody" id="melody" class="form-control" required>
+            </div>
+
+            <!-- Matrix dimension input -->
+            <div class="mb-3">
+                <label for="dimension" class="form-label">Matrix Dimension (n x n):</label>
+                <input type="number" name="dimension" id="dimension" class="form-control" required min="2" max="5">
+            </div>
+    
+            <!-- Key input -->
+            <div class="mb-3">
+                <label for="key" class="form-label">Key for the Hill Cipher (dimension^2 notes):</label>
+                <input type="text" name="key" id="key" class="form-control" required>
+            </div>
+    
+            <!-- Submit button -->
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-primary">Encrypt</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}

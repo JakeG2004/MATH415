@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Musical Cipher App{% endblock %}
+
+{% block content %}
+    <div class="container py-5">
+        <h2 class="text-center mb-4">Welcome to the Musical Cipher App</h2>
+        
+        <p class="lead text-center">
+            This application allows you to encrypt musical melodies using different ciphers. Select a cipher from the navigation menu to get started!
+        </p>
+        
+        <!-- Optional Call to Action Section -->
+        <div class="text-center">
+            <a href="{{ url_for('caesar') }}" class="btn btn-primary btn-lg mx-2">Caesar Cipher</a>
+            <a href="{{ url_for('vigenere') }}" class="btn btn-secondary btn-lg mx-2">Vigenère Cipher</a>
+            <a href="{{ url_for('affine') }}" class="btn btn-success btn-lg mx-2">Affine Cipher</a>
+            <a href="{{ url_for('hill') }}" class="btn btn-warning btn-lg mx-2">Hill Cipher</a>
+            <a href="{{ url_for('adfgx') }}" class="btn btn-info btn-lg mx-2">ADFGX Cipher</a>
+            <a href="{{ url_for('playfair') }}" class="btn btn-dark btn-lg mx-2">Playfair Cipher</a>
+        </div>
+    </div>
+{% endblock %}

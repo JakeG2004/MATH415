@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Caesar Cipher - Musical Cipher App{% endblock %}
+
+{% block content %}
+    <div class="container py-5">
+        <h2 class="text-center mb-4">Caesar Cipher</h2>
+        
+        <form method="POST">
+            <!-- Melody input -->
+            <div class="mb-3">
+                <label for="melody" class="form-label">Enter melody (e.g., A Bb C /):</label>
+                <input type="text" id="melody" name="melody" class="form-control" required>
+            </div>
+
+            <!-- Key note input -->
+            <div class="mb-3">
+                <label for="key_note" class="form-label">Enter shift key (note):</label>
+                <input type="text" id="key_note" name="key_note" class="form-control" required>
+            </div>
+
+            <!-- Submit button -->
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-primary">Encrypt and Download MIDI</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}
