@@ -3,7 +3,7 @@
 \usepackage{amsmath}
 \usepackage[
 backend=biber,
-style=alphabetic,
+style=numeric,
 sorting=ynt
 ]{biblatex}
 
@@ -19,12 +19,12 @@ sorting=ynt
 	\tableofcontents
 
 	\section{Abstract}
-    This paper will explore classical cryptosystems and their adaptations to take in and spit out musical melodies. This topic comes from my interests in both music and mathematics. As the class has progressed, I have been making connections between the concepts in class and the music that I play. Through this paper, the same melodies will be applied to each of the cryptosystems in order to determine which makes the best sounding result, as measured by my ear.
+    This paper will explore classical cryptosystems and their adaptations to take in and spit out musical melodies. This topic connects the fields of music and math, exploring the connections between cryptography and music. Through the analysis, various consistent melodies will be used to yield several melodies.
 
 	\section{Introduction}
-    In typical applications of cryptosystems, the set of valid characters is the letters of the english alphabet. In order to adapt these systems for musical systems, I defined the set of valid characters to be $C = \{A, Bb, B, C, Db, D, Eb, E, F, Gb, G, Ab, /\}$. Each symbol represents a note of 12 tone equal temperament, and '/' represents rest. This set contains 13 characters. For simplicity's sake, I will restrict the plaintext melodies to be a single measure of eight eighth notes.
+    In typical applications of cryptosystems, the set of valid characters is the letters of the english alphabet. In order to adapt these systems for musical systems, the set of valid characters is defined to be $C = \{A, Bb, B, C, Db, D, Eb, E, F, Gb, G, Ab, /\}$. Each symbol represents a note of 12 tone equal temperament, and '/' represents rest. This set contains 13 characters. For simplicity's sake, the plaintext melodies will be restricted to be a single measure of eight eighth notes.
 
-    In my discoveries, I discuss the observed relationships between the melodies and keys fed into the ciphers, and the resulting melody. I use musical terminology, which I will explain here:
+    Throughout this paper, musical terms are used often, particularly during the discoveries section. A basic version of these topics are as follows:
     \begin{itemize}
         \item Key (music) - The set of pitches that will be used in a tune. Each key has a corresponding major and minor version.
         \item Scale - An ascending line that plays every note of a musical key.
@@ -145,7 +145,7 @@ sorting=ynt
 
 	\subsection{Playfair Cipher}
     	\subsubsection{History}
-        The Playfair Cipher was created by Charles Wheatstone, but carries the name of his friend - Lyon Playfair. Playfair was "A scientist and public figure of Victorian England..." \cite{Kahn}. As such, he had some pull within the English government. In January of 1854, Playfair demonstrated "Wheatstone's newly discovered symmetrical cipher" at a dinner hosted by Lord Granville, which included guests such as the Home Secretary and the future Prime Minister \cite{Kahn}.
+        The Playfair Cipher was created by Charles Wheatstone, but carries the name of his friend - Lyon Playfair. Playfair was a prominent scientist and politician in Victorian England \cite{Kahn}. As such, he had some pull within the English government. In January of 1854, Playfair demonstrated and early version of the Playfair Cipher at a dinner hosted by Lord Granville, which included guests such as the Home Secretary and the future Prime Minister \cite{Kahn}.
         
         Wheatstone and Playfair explained the cipher to some higher-ups in the government, where it was eventually accepted. It may have been used in the Crimean War, but there is no solid evidence of it. It was, however, defnitely used during the Boer war \cite{Kahn}.
     
@@ -269,7 +269,7 @@ sorting=ynt
         \cite{Trappe}
     
     	\subsubsection{Modification to Work With Music}
-    	By changing the labels on the outside of the matrix, I am able to decide which notes end up in the ciphertext. Given a 4x3 matrix, I have 7 possible pitches. Taking 1 away for the rest leaves me with just enough to make a blues scale.
+    	By changing the labels on the outside of the matrix, it can be decided which notes end up in the ciphertext. Given a 4x3 matrix, there are 7 possible pitches. Taking 1 away for the rest leaves me with just enough to make a blues scale.
     	\begin{enumerate}
     		\item The creation of the matrix:
     			\begin{enumerate}
@@ -304,34 +304,34 @@ sorting=ynt
     	Bb, Gb, G\}
 
 	\section{Discoveries}
-        I used three different melodies to test my ciphers. The three are:
+        Three different melodies were used to test my ciphers. The three are:
         \begin{enumerate}
             \item An A minor scale - \{A, B, C, D, E, F, G, /\}.
             \item "The Lick", a famous jazz lick - \{D, E, F, G, E, / , C, D\}.
             \item The note C repeated 8 times - \{C, C, C, C, C, C, C, C\}.
         \end{enumerate}
 
-        I tested all three melodies with each of the three cryptosystems. Unsurprisingly, most of the results were bad. There were, however, some exceptions.
+        Each cryptosystem was tested with all three of the melodies listed above. Unsurprisingly, most of the results were bad. There were, however, some exceptions.
 
         \subsection{Caesar Cipher}
-        The Caesar Cipher sounded good with most melodies since the same note relationships would be held, but they would be shifted up by a consistent amount. This means that whatever I fed it, would more or less, persist after the encryption.
+        The Caesar Cipher sounded good with most melodies since the same note relationships would be held, but they would be shifted up by a consistent amount. This means that whatever would be fed it, would more or less, persist after the encryption.
 
-        When I was making this Cipher, I had the vision of musical transposition in my head. This musical transposition, however, is not quite the same as a mathematical transposition. In musical transposition, rests are maintained, and only pitches are moved. However, with my implementation, the rests are treated as any other note, so they will be transposed as well.
+        This version of the cipher is similar to musical transposition, but it is notably different. In particular, musical notation preserves rests, and only shifts the notes. In this implementation, rests are treated as notes, and are transcribed as such.
 
         \subsection{Vigenere Cipher}
-        The Vigenere Cipher could also sound good, but it depended on what I used for the key. I found that using the notes in a chord as the key tended to make the Vigenere Cipher sound good.
+        The Vigenere Cipher could also sound good, but it depended on what was used for the key. Using the notes in a chord as the key tended to make the Vigenere Cipher sound good.
 
-        Specifically, I found that using a key of \{A, C, E\} or \{C, E, G\} - the A minor triad and C major triad, which is its corresponding major musical key - sounded good. It didn't really matter how many chord extensions I used, as long as the key was part of the chord signature of A minor, it would result in something good.
+        Specifically, it sounded good when using a key of \{A, C, E\} or \{C, E, G\} - the A minor triad and C major triad, which is its corresponding major musical key - sounded good. It didn't really matter how many chord extensions were used, as long as the key was part of the chord signature of A minor, it would result in something good.
 
         \subsection{Affine Cipher}
-        The Affine Cipher could also sound good when given the right key. If I were to use a key $(\alpha, \beta)$ such that $\alpha$ and $\beta$ were the third and the seventh of the chord, it sounded better.
+        The Affine Cipher could also sound good when given the right key. If $(\alpha, \beta)$ were used such that $\alpha$ and $\beta$ were the third and the seventh of the chord, it sounded better.
 
-        For example, with the melody that I have used frequently in this paper - \{D, E, F, G, E, /, C, D\} - the musical key is D minor. The third and the seventh of D minor would be F and C, respectively. Going through and applying the algorithm to each pitch with the key $(F, C)$ yields \{Db, E, B, D, E, F, Bb, Db\}, which, interestingly, fits almost entirely into the key of F - the relative major to D minor. 
+        For example, with the melody that was used frequently in this paper - \{D, E, F, G, E, /, C, D\} - the musical key is D minor. The third and the seventh of D minor would be F and C, respectively. Going through and applying the algorithm to each pitch with the key $(F, C)$ yields \{Db, E, B, D, E, F, Bb, Db\}, which, interestingly, fits almost entirely into the key of F - the relative major to D minor. 
         
         Interestingly, this property holds true for all sorts of melodies and keys. Testing it with the A minor scale, along with the corresponding key yields \{G, C, Eb, /, D, G, Bb, E\}, which fits almost entirely into the key of C major, which is A minor's relative major.
 
         \subsection{Hill Cipher}
-        The only scenario where I was able to get the  Hill Cipher to sound good was when I encrypted with $3 * 3$ matrix such as:
+        The only scenario where the Hill Cipher sounded good was when this $3 * 3$ matrix was used.
         \[
         \begin{bmatrix}
             A & B & C \\
@@ -340,7 +340,7 @@ sorting=ynt
         \end{bmatrix}
         \]
 
-        I believe this to be the case because all of the non-diatonic parts of the matrix - like \{A, B, C\} - of the encryption matrix lie in the rows, whereas the nice chordal parts lie in the colums - like \{A, D, G\}. Looking at how multiplication of vectors and matrices is done, the values of each row get multiplied by the vector values of the vector, then added together, whereas the columns are each individual. This leads to the non-diatonic parts combining, and potentially, canceling out.
+        This may be the case because all of the non-diatonic parts of the matrix - like \{A, B, C\} - of the encryption matrix lie in the rows, whereas the nice chordal parts lie in the colums - like \{A, D, G\}. Looking at how multiplication of vectors and matrices is done, the values of each row get multiplied by the vector values of the vector, then added together, whereas the columns are each individual. This leads to the non-diatonic parts combining, and potentially, canceling out.
 
         \subsection{Playfair Cipher}
         The Playfair cipher, similar to the Vigenere Cipher, tended to work nicely if the encryption key spelled out the chord of the musical key. For example, encrypting the A minor scale with the A minor chord resulted in a surprisingly beautiful melody.
@@ -348,9 +348,9 @@ sorting=ynt
         Encryption with other chords, however, tended to make the resulting melody more non-diatonic the further away from the musical key center the encryption key is. For example, the A minor scale encrypted with the Bb minor triad tended to still sound good, whereas encryption with the E minor triad sounded worse.
 
         \subsection{ADFGX Cipher}
-        The ADFGX Cipher was the best sounding algorithm. Because of how I modified the algorithm to work with music, I was able to choose the seven possible notes that the algorithm could output. I chose to make it the A minor blues scale. Since the output of the algorithm was limited to \{A, C, D, Eb, F, G, /\}, it tended to sound decent, no matter what I put into it.
+        The ADFGX Cipher was the best sounding algorithm. Because of how the algorithm was modified to work with music, the output notes were able to be chosen. In this implementation, the possible output notes make an A minor blues scale. Since the output of the algorithm was limited to \{A, C, D, Eb, F, G, /\}, it tended to sound decent, no matter what was put into it.
 
-        That being said, as with many of the other algorithms, it tended to sound better if the encryption key that was fed to the algorithm was also a part of the musical key. The major triad sounded good, however, I found the minor triad with the major seventh extension to sound really good. For example, encrypting the A minor scale with the key \{A, C, E, G\} produced a very interesting melody, with a neat chromatic ascension at the beginning.
+        That being said, as with many of the other algorithms, it tended to sound better if the encryption key that was fed to the algorithm was also a part of the musical key. The major triad sounded good, however, the minor triad with the major seventh extension to sound really good. For example, encrypting the A minor scale with the key \{A, C, E, G\} produced a very interesting melody, with a neat chromatic ascension at the beginning.
         
 
 	\section{Computer Implementation}
