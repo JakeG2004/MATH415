@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}Help - Musical Cipher App{% endblock %}
+
+{% block content %}
+    <div class="container py-5">
+        <h2 class="text-center mb-4">Help</h2>
+        
+        <form method="POST" onsubmit="return validateMelody()">
+            <!-- Melody input -->
+            <div class="mb-3">
+                <label for="melody" class="form-label">Test Melody:</label>
+                <input type="text" name="melody" id="melody" class="form-control" required autocomplete="off" 
+                    placeholder="Enter 8 notes from {A, Bb, B, C, Db, D, Eb, E, F, Gb, G, Ab, /}" 
+                    oninput="validateMelody()"> <!-- Trigger validation on input -->
+                <small class="form-text text-muted">Valid notes: A, Bb, B, C, Db, D, Eb, E, F, Gb, G, Ab, and rest (denoted by "/"). Ensure the melody consists of exactly 8 tokens.</small>
+                <div id="melody-status" class="mt-2"></div>
+            </div>
+    
+            <!-- Submit button -->
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-primary">Encrypt</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Melody validation function
+        function validateMelody() {
+            const melodyInput = document.getElementById("melody").value;
+            const validNotes = ["A", "Bb", "B", "C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "/"];
+            const melodyStatus = document.getElementById("melody-status");
+
+            // Regex to match valid tokens (notes or '/')
+            const notePattern = /(?<!C|F)b|Ab|Bb|Db|Eb|Gb|[A-G]|\/+/g;
+
+            // Parse the input into tokens
+            const melodyTokens = melodyInput.match(notePattern);
+
+            // Check if melodyTokens is not null and contains exactly 8 valid notes
+            if (melodyTokens && melodyTokens.length === 8 && melodyTokens.every(note => validNotes.includes(note))) {
+                melodyStatus.textContent = `Valid input: ${melodyTokens.join(" ")}`;
+                melodyStatus.style.color = "green";
+                return true; // Input is valid
+            } else {
+                melodyStatus.textContent = "Invalid input: Ensure exactly 8 case sensitive tokens are entered, using only {A, Bb, B, C, Db, D, Eb, E, F, Gb, G, Ab, /}.";
+                melodyStatus.style.color = "red";
+                return false; // Input is invalid
+            }
+        }
+
+
+    </script>
+{% endblock %}

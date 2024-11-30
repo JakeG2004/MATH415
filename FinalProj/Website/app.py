@@ -42,7 +42,7 @@ def caesar():
 
         tokens = GetInput(melody, 8)
         key = GetInput(key_note, 1)
-        if not tokens:
+        if not tokens or not key:
             return "Invalid input! Please try again."
 
         try:
@@ -180,6 +180,10 @@ def hill():
         return send_file(midi_path, as_attachment=True)
 
     return render_template("hill.html")
+
+@app.route('/help', methods=["GET", "POST"])
+def help():
+    return render_template("help.html")
 
 @app.route('/paper', methods=["GET", "POST"])
 def paper():

@@ -6,23 +6,33 @@
     <div class="container py-5">
         <h2 class="text-center mb-4">Hill Cipher</h2>
         
-        <form method="POST">
+        <form method="POST" onsubmit="return validateInputs()">
             <!-- Melody input -->
             <div class="mb-3">
                 <label for="melody" class="form-label">Melody for the Hill Cipher:</label>
-                <input type="text" name="melody" id="melody" class="form-control" required autocomplete="off">
+                <input type="text" name="melody" id="melody" class="form-control" required autocomplete="off" 
+                    placeholder="Enter 8 notes from {A, Bb, B, C, Db, D, Eb, E, F, Gb, G, Ab, /}" 
+                    oninput="validateMelody()">
+                <small class="form-text text-muted">Valid notes: A, Bb, B, C, Db, D, Eb, E, F, Gb, G, Ab, and rest (denoted by "/"). Ensure the melody consists of exactly 8 tokens.</small>
+                <div id="melody-status" class="mt-2"></div>
             </div>
 
             <!-- Matrix dimension input -->
             <div class="mb-3">
                 <label for="dimension" class="form-label">Matrix Dimension (n x n):</label>
-                <input type="number" name="dimension" id="dimension" class="form-control" required min="2" max="5" autocomplete="off">
+                <input type="number" name="dimension" id="dimension" class="form-control" required min="2" max="5" autocomplete="off" 
+                    oninput="validateDimension()">
+                <small class="form-text text-muted">Input must be an integer number between 2 and 5.</small>
+                <div id="dimension-status" class="mt-2"></div>
             </div>
     
             <!-- Key input -->
             <div class="mb-3">
                 <label for="key" class="form-label">Key for the Hill Cipher (dimension^2 notes):</label>
-                <input type="text" name="key" id="key" class="form-control" required autocomplete="off">
+                <input type="text" name="key" id="key" class="form-control" required autocomplete="off" 
+                    oninput="validateKey()">
+                <small class="form-text text-muted">Valid notes: A, Bb, B, C, Db, D, Eb, E, F, Gb, G, Ab, and rest (denoted by "/"). Ensure the key consists of exactly dimension * dimension tokens.</small>
+                <div id="key-status" class="mt-2"></div>
             </div>
     
             <!-- Submit button -->
@@ -31,4 +41,75 @@
             </div>
         </form>
     </div>
+
+    <script>
+        // Common valid notes
+        const validNotes = ["A", "Bb", "B", "C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "/"];
+        const notePattern = /(?<!C|F)b|Ab|Bb|Db|Eb|Gb|[A-G]|\/+/g;
+
+        // Validate melody input (exactly 8 tokens)
+        function validateMelody() {
+            const melodyInput = document.getElementById("melody").value;
+            const melodyStatus = document.getElementById("melody-status");
+
+            // Parse the input into tokens
+            const melodyTokens = melodyInput.match(notePattern);
+
+            // Check if melodyTokens is not null and contains exactly 8 valid notes
+            if (melodyTokens && melodyTokens.length === 8 && melodyTokens.every(note => validNotes.includes(note))) {
+                melodyStatus.textContent = `Valid melody: ${melodyTokens.join(" ")}`;
+                melodyStatus.style.color = "green";
+                return true;
+            } else {
+                melodyStatus.textContent = "Invalid melody: Ensure exactly 8 valid tokens.";
+                melodyStatus.style.color = "red";
+                return false;
+            }
+        }
+
+        // Validate matrix dimension input (between 2 and 5)
+        function validateDimension() {
+            const dimensionInput = document.getElementById("dimension").value;
+            const dimensionStatus = document.getElementById("dimension-status");
+
+            if (dimensionInput >= 2 && dimensionInput <= 5) {
+                dimensionStatus.textContent = `Valid dimension: ${dimensionInput}`;
+                dimensionStatus.style.color = "green";
+                return true;
+            } else {
+                dimensionStatus.textContent = "Invalid dimension: Enter an integer between 2 and 5.";
+                dimensionStatus.style.color = "red";
+                return false;
+            }
+        }
+
+        // Validate key input (dimension * dimension tokens)
+        function validateKey() {
+            const dimension = document.getElementById("dimension").value;
+            const keyInput = document.getElementById("key").value;
+            const keyStatus = document.getElementById("key-status");
+
+            // Calculate required number of tokens based on dimension
+            const requiredTokens = dimension * dimension;
+            const keyTokens = keyInput.match(notePattern);
+
+            if (keyTokens && keyTokens.length === requiredTokens && keyTokens.every(note => validNotes.includes(note))) {
+                keyStatus.textContent = `Valid key: ${keyTokens.join(" ")}`;
+                keyStatus.style.color = "green";
+                return true;
+            } else {
+                keyStatus.textContent = `Invalid key: Ensure the key has exactly ${requiredTokens} valid tokens.`;
+                keyStatus.style.color = "red";
+                return false;
+            }
+        }
+
+        // Combined validation for form submission
+        function validateInputs() {
+            const isMelodyValid = validateMelody();
+            const isDimensionValid = validateDimension();
+            const isKeyValid = validateKey();
+            return isMelodyValid && isDimensionValid && isKeyValid;
+        }
+    </script>
 {% endblock %}

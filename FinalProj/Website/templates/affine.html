@@ -6,23 +6,33 @@
     <div class="container py-5">
         <h2 class="text-center mb-4">Affine Cipher</h2>
         
-        <form method="POST">
+        <form method="POST" onsubmit="return validateInputs()">
             <!-- Melody input -->
             <div class="mb-3">
                 <label for="melody" class="form-label">Enter melody (e.g., A Bb C /):</label>
-                <input type="text" id="melody" name="melody" class="form-control" required autocomplete="off">
+                <input type="text" id="melody" name="melody" class="form-control" required autocomplete="off" 
+                    placeholder="Enter 8 notes from {A, Bb, B, C, Db, D, Eb, E, F, Gb, G, Ab, /}" 
+                    oninput="validateMelody('melody')">
+                <small class="form-text text-muted">Valid notes: A, Bb, B, C, Db, D, Eb, E, F, Gb, G, Ab, and rest (denoted by "/"). Ensure the melody consists of exactly 8 tokens.</small>
+                <div id="melody-status" class="mt-2"></div>
             </div>
 
             <!-- Alpha input -->
             <div class="mb-3">
                 <label for="alpha" class="form-label">Enter alpha (note):</label>
-                <input type="text" id="alpha" name="alpha" class="form-control" required autocomplete="off">
+                <input type="text" id="alpha" name="alpha" class="form-control" required autocomplete="off" 
+                    oninput="validateSingleToken('alpha')">
+                <small class="form-text text-muted">Valid notes: A, Bb, B, C, Db, D, Eb, E, F, Gb, G, Ab, and rest (denoted by "/"). Ensure only one token is entered.</small>
+                <div id="alpha-status" class="mt-2"></div>
             </div>
 
             <!-- Beta input -->
             <div class="mb-3">
                 <label for="beta" class="form-label">Enter beta (note):</label>
-                <input type="text" id="beta" name="beta" class="form-control" required autocomplete="off">
+                <input type="text" id="beta" name="beta" class="form-control" required autocomplete="off" 
+                    oninput="validateSingleToken('beta')">
+                <small class="form-text text-muted">Valid notes: A, Bb, B, C, Db, D, Eb, E, F, Gb, G, Ab, and rest (denoted by "/"). Ensure only one token is entered.</small>
+                <div id="beta-status" class="mt-2"></div>
             </div>
 
             <!-- Submit button -->
@@ -31,4 +41,52 @@
             </div>
         </form>
     </div>
+
+    <script>
+        // Common valid notes
+        const validNotes = ["A", "Bb", "B", "C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "/"];
+        const notePattern = /(?<!C|F)b|Ab|Bb|Db|Eb|Gb|[A-G]|\/+/g;
+
+        // Validate melody input (exactly 8 tokens)
+        function validateMelody(inputId) {
+            const inputElement = document.getElementById(inputId);
+            const inputStatusElement = document.getElementById(inputId + "-status");
+            const inputTokens = inputElement.value.match(notePattern);
+
+            if (inputTokens && inputTokens.length === 8 && inputTokens.every(note => validNotes.includes(note))) {
+                inputStatusElement.textContent = `Valid melody: ${inputTokens.join(" ")}`;
+                inputStatusElement.style.color = "green";
+                return true;
+            } else {
+                inputStatusElement.textContent = "Invalid melody: Ensure exactly 8 tokens using valid notes.";
+                inputStatusElement.style.color = "red";
+                return false;
+            }
+        }
+
+        // Validate single token input (for alpha and beta)
+        function validateSingleToken(inputId) {
+            const inputElement = document.getElementById(inputId);
+            const inputStatusElement = document.getElementById(inputId + "-status");
+            const inputTokens = inputElement.value.match(notePattern);
+
+            if (inputTokens && inputTokens.length === 1 && validNotes.includes(inputTokens[0])) {
+                inputStatusElement.textContent = `Valid input: ${inputTokens[0]}`;
+                inputStatusElement.style.color = "green";
+                return true;
+            } else {
+                inputStatusElement.textContent = "Invalid input: Ensure only one valid note token is entered.";
+                inputStatusElement.style.color = "red";
+                return false;
+            }
+        }
+
+        // Combined validation for form submission
+        function validateInputs() {
+            const isMelodyValid = validateMelody("melody");
+            const isAlphaValid = validateSingleToken("alpha");
+            const isBetaValid = validateSingleToken("beta");
+            return isMelodyValid && isAlphaValid && isBetaValid;
+        }
+    </script>
 {% endblock %}

@@ -6,17 +6,24 @@
     <div class="container py-5">
         <h2 class="text-center mb-4">Caesar Cipher</h2>
         
-        <form method="POST">
+        <form method="POST" onsubmit="return validateInputs()">
             <!-- Melody input -->
             <div class="mb-3">
                 <label for="melody" class="form-label">Enter melody (e.g., A Bb C /):</label>
-                <input type="text" id="melody" name="melody" class="form-control" required autocomplete="off">
+                <input type="text" id="melody" name="melody" class="form-control" required autocomplete="off" 
+                    placeholder="Enter 8 notes from {A, Bb, B, C, Db, D, Eb, E, F, Gb, G, Ab, /}" 
+                    oninput="validateMelody('melody')">
+                <small class="form-text text-muted">Valid notes: A, Bb, B, C, Db, D, Eb, E, F, Gb, G, Ab, and rest (denoted by "/"). Ensure the melody consists of exactly 8 tokens.</small>
+                <div id="melody-status" class="mt-2"></div>
             </div>
 
             <!-- Key note input -->
             <div class="mb-3">
                 <label for="key_note" class="form-label">Enter shift key (note):</label>
-                <input type="text" id="key_note" name="key_note" class="form-control" required autocomplete="off">
+                <input type="text" id="key_note" name="key_note" class="form-control" required autocomplete="off" 
+                    oninput="validateSingleToken('key_note')">
+                <small class="form-text text-muted">Valid notes: A, Bb, B, C, Db, D, Eb, E, F, Gb, G, Ab, and rest (denoted by "/"). Ensure the input is exactly 1 token.</small>
+                <div id="key_note-status" class="mt-2"></div>
             </div>
 
             <!-- Submit button -->
@@ -25,4 +32,51 @@
             </div>
         </form>
     </div>
+
+    <script>
+        // Common valid notes
+        const validNotes = ["A", "Bb", "B", "C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "/"];
+        const notePattern = /(?<!C|F)b|Ab|Bb|Db|Eb|Gb|[A-G]|\/+/g;
+
+        // Validate melody input (exactly 8 tokens)
+        function validateMelody(inputId) {
+            const inputElement = document.getElementById(inputId);
+            const inputStatusElement = document.getElementById(inputId + "-status");
+            const inputTokens = inputElement.value.match(notePattern);
+
+            if (inputTokens && inputTokens.length === 8 && inputTokens.every(note => validNotes.includes(note))) {
+                inputStatusElement.textContent = `Valid melody: ${inputTokens.join(" ")}`;
+                inputStatusElement.style.color = "green";
+                return true;
+            } else {
+                inputStatusElement.textContent = "Invalid melody: Ensure exactly 8 tokens using valid notes.";
+                inputStatusElement.style.color = "red";
+                return false;
+            }
+        }
+
+        // Validate single token input (for key note)
+        function validateSingleToken(inputId) {
+            const inputElement = document.getElementById(inputId);
+            const inputStatusElement = document.getElementById(inputId + "-status");
+            const inputTokens = inputElement.value.match(notePattern);
+
+            if (inputTokens && inputTokens.length === 1 && validNotes.includes(inputTokens[0])) {
+                inputStatusElement.textContent = `Valid input: ${inputTokens[0]}`;
+                inputStatusElement.style.color = "green";
+                return true;
+            } else {
+                inputStatusElement.textContent = "Invalid input: Ensure only one valid note token is entered.";
+                inputStatusElement.style.color = "red";
+                return false;
+            }
+        }
+
+        // Combined validation for form submission
+        function validateInputs() {
+            const isMelodyValid = validateMelody("melody");
+            const isKeyNoteValid = validateSingleToken("key_note");
+            return isMelodyValid && isKeyNoteValid;
+        }
+    </script>
 {% endblock %}
